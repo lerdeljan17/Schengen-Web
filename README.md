@@ -2,6 +2,8 @@
 
 Responsive web companion to https://github.com/lerdeljan17/Schengen, preserving its four screens, rounded cards, original colors and eight themes.
 
+[Live website](https://schengen-travel-tracker.lerdeljan.chatgpt.site)
+
 ## Run
 
 Node 22.13+; `npm ci`, then `npm run dev`. Production: `npm run build`. The application is a React/Vinext app with a Cloudflare-compatible Worker build.
@@ -26,8 +28,8 @@ Confirmed forecasts intentionally clip open trips at today (the Android implemen
 
 ## Validation
 
-`npx tsc --noEmit`
+`npm run check`
 
-`node --experimental-strip-types --test tests/schengen.test.ts`
+GitHub Actions runs type checking, the calculation and backup tests, and the production build on every push and pull request to `main`.
 
 Tests cover inclusive dates, overlapping trips, rolling-window boundaries, open-trip projections, recovery dates, the 91st-day overstay boundary, leap years/DST, Android-format backup round trips, and invalid imports.
