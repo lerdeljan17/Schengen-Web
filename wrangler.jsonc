@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "schengen-tracker-web",
+  "name": "app",
   "account_id": "81230d0953957d5b68d32a7bd2f871bb",
   "main": "vinext/server/fetch-handler",
   "compatibility_date": "2026-05-15",
