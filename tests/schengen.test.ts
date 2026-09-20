@@ -1,6 +1,6 @@
 import {strict as assert} from 'node:assert';
 import {test} from 'node:test';
-import {used,available,confirmed,recovery,overstay,day,iso,initial,exportCsv,importBackup,jsonBackup,type Trip} from '../lib/schengen.ts';
+import {used,available,confirmed,recovery,overstay,day,iso,initial,exportCsv,importBackup,jsonBackup,parseData,type Trip} from '../lib/schengen.ts';
 const trip=(entryDate:string,exitDate:string|null):Trip=>({id:'t',profileId:'default',entryDate,exitDate,source:'MANUAL',countries:['FR'],note:''});
 test('entry and exit inclusive, overlapping trips counted once',()=>{assert.equal(used('2026-03-10',[trip('2026-03-01','2026-03-10'),trip('2026-03-05','2026-03-15')]),10);assert.equal(used('2026-03-01',[trip('2026-03-01','2026-03-01')]),1)});
 test('rolling window includes D-179, drops D-180',()=>{const d='2026-09-19';assert.equal(used(d,[trip(iso(day(d)-180),iso(day(d)-179))]),1)});
@@ -9,3 +9,4 @@ test('91st day flags overstay and clamps remaining days to zero',()=>{const t=[t
 test('leap years and DST do not change inclusive duration',()=>{assert.equal(used('2024-03-01',[trip('2024-02-28','2024-03-01')]),3);assert.equal(used('2026-03-30',[trip('2026-03-28','2026-03-30')]),3)});
 test('Android CSV and JSON preserve profiles, countries, commas, quotes and newlines',()=>{const data={...initial,profiles:[{id:'default',name:'Test, traveler',passportNumber:''}],trips:[{...trip('2026-01-01','2026-01-10'),note:'A "quoted" note,\nwith two lines',countries:['FR','DE']}]};for(const text of [exportCsv(data),JSON.stringify(jsonBackup(data))]){const read=importBackup(text,initial);assert.equal(read.profiles[0].name,data.profiles[0].name);assert.equal(read.trips[0].note,data.trips[0].note);assert.deepEqual(read.trips[0].countries,['FR','DE']);assert.equal(read.trips[0].exitDate,'2026-01-10')}});
 test('invalid imports rejected before changing data',()=>{assert.throws(()=>importBackup('bad data',initial));const bad=jsonBackup({...initial,trips:[trip('2026-03-10','2026-03-01')]});assert.throws(()=>importBackup(JSON.stringify(bad),initial));assert.equal(initial.trips.length,0)});
+test('cloud data validation isolates profiles and rejects oversized fields',()=>{assert.deepEqual(parseData(initial),initial);assert.throws(()=>parseData({...initial,trips:[{...trip('2026-01-01','2026-01-02'),profileId:'missing'}]}),/missing profile/);assert.throws(()=>parseData({...initial,profiles:[{...initial.profiles[0],passportNumber:'x'.repeat(41)}]}),/passport number/)});

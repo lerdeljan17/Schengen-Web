@@ -8,6 +8,13 @@
       "when": 1789894256155,
       "tag": "0000_living_reavers",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1789897867850,
+      "tag": "0001_living_bedlam",
+      "breakpoints": true
     }
   ]
 }

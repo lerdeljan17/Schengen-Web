@@ -20,15 +20,16 @@ npm start
 - Trip CRUD, open trips, country flags and multi-country selection, notes and source labels.
 - 25-month calendar with daily availability, connected trip highlights and day details.
 - Traveler profiles, system/light/dark appearance and eight original color themes.
-- Local browser persistence and Android-compatible CSV/JSON backup and restore. Restore validates the entire backup before replacing data, with confirmation.
+- Passwordless email login through Cloudflare Access, open to any verified email address.
+- Per-account D1 sync with a browser cache and automatic one-time migration of pre-login browser data. Android-compatible CSV/JSON backup and restore remain available.
 - Opt-in foreground location checks via OpenStreetMap Nominatim, plus browser notifications at 30/15/7/1 days remaining while the site is open.
 - A feature-detected WebMCP date checker sharing UI state and calculation functions.
 
 ## Platform differences
 
-Google Drive sync was deferred by the owner. No Google credentials are configured, and the UI clearly reports this. Use backups to transfer data between devices. Trips are local to each browser, not automatically shared across devices.
+Cloudflare Access protects the entire Worker and supplies a verified identity to the server. Each account's profiles, optional passport numbers, trips and preferences are stored as a validated JSON snapshot in an isolated D1 row. Data is not end-to-end encrypted, so users who do not want passport details in D1 should leave the optional passport-number field blank. `/api/health` checks D1 availability.
 
-D1 currently stores only non-personal application metadata and is checked by `/api/health`. Travel and passport data deliberately remain in browser storage until the app has real user authentication and an explicit encrypted sync design.
+The first successful login moves the existing anonymous browser snapshot into that account if the account has no cloud data. Later logins on the same browser use account-specific cache keys so one account's local data cannot be imported into another account.
 
 Web browsers do not provide Android-style reliable background geofences, periodic location checks or daily notifications when the site is closed. Foreground checks are labeled accordingly. Location permission is requested only on explicit opt-in; coordinates are used for reverse geocoding and are not saved. Validate auto-detected dates after crossings.
 
@@ -52,7 +53,11 @@ The free-tier `schengen-tracker-db` database is already provisioned in the EU ju
 
 2. In the GitHub repository, open **Settings → Secrets and variables → Actions** and add repository secret `CLOUDFLARE_API_TOKEN`.
 
-3. Push this configuration to `main`, or re-run the `CI` workflow. The first successful deploy creates the `schengen-tracker-web` Worker and gives it a `workers.dev` URL. Verify `https://<worker-url>/api/health` returns `{"status":"ok","database":"ok"}`.
+3. Push this configuration to `main`, or re-run the `CI` workflow. The deploy applies pending D1 migrations before publishing the Worker.
+
+4. Enable Cloudflare Zero Trust for the account. On the Worker's **Access** tab, protect **All traffic** and create an Allow policy whose Include selector is **Login Methods → One-time PIN**. This intentionally permits anyone who can verify an email address. Do not use an Everyone/Bypass rule: it would skip authentication and the server will reject data API requests.
+
+5. Visit the Worker in a private browser window. Cloudflare should request an email and one-time code before showing the app. Once signed in, Settings should show **Cloud sync → Up to date** and the header should show the account email and **Log out**.
 
 For a one-off authenticated local deployment, authenticate Wrangler and run the deployment script:
 
