@@ -6,7 +6,8 @@ const COOKIE_NAME = "schengen_session";
 const SESSION_SECONDS = 60 * 60 * 24 * 30;
 const RATE_WINDOW_MS = 15 * 60 * 1000;
 const MAX_ATTEMPTS = 10;
-const PBKDF2_ITERATIONS = 210_000;
+// Cloudflare Workers caps a single PBKDF2 operation at 100,000 iterations.
+const PBKDF2_ITERATIONS = 100_000;
 
 export type AuthUser = { id: string; email: string };
 

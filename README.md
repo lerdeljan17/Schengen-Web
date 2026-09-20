@@ -27,7 +27,7 @@ npm start
 
 ## Platform differences
 
-Accounts, hashed passwords and sessions are stored in D1. Passwords are derived with PBKDF2-SHA256 using a unique random salt and 210,000 iterations; raw passwords and raw session tokens are never stored. Session cookies are HttpOnly, SameSite=Lax and Secure in production, and login attempts are throttled. Each account's profiles, optional passport numbers, trips and preferences are stored as a validated JSON snapshot in an isolated D1 row. Data is not end-to-end encrypted, so users who do not want passport details in D1 should leave the optional passport-number field blank. `/api/health` checks D1 availability.
+Accounts, hashed passwords and sessions are stored in D1. Passwords are derived with PBKDF2-SHA256 using a unique random salt and Cloudflare Workers' maximum 100,000 iterations; raw passwords and raw session tokens are never stored. Session cookies are HttpOnly, SameSite=Lax and Secure in production, and login attempts are throttled. Each account's profiles, optional passport numbers, trips and preferences are stored as a validated JSON snapshot in an isolated D1 row. Data is not end-to-end encrypted, so users who do not want passport details in D1 should leave the optional passport-number field blank. `/api/health` checks D1 availability.
 
 Email addresses are account identifiers only: this first version does not verify ownership and does not provide password recovery. Users should choose a unique strong password and keep a portable backup of their trips.
 
