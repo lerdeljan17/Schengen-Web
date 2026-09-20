@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "schengen-tracker-web",
+  "account_id": "81230d0953957d5b68d32a7bd2f871bb",
+  "main": "vinext/server/fetch-handler",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "preview_urls": true,
+  "assets": {
+    "not_found_handling": "none"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "schengen-tracker-db",
+      "database_id": "b0b116d8-8075-4a4c-82f1-e03879993fb8",
+      "migrations_dir": "drizzle"
+    }
+  ]
+}
