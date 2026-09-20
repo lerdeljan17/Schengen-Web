@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { userState } from "@/db/schema";
-import { getAccessUser, unauthorized } from "@/lib/access";
+import { getSessionUser, isSameOrigin, unauthorized } from "@/lib/auth";
 import { parseData } from "@/lib/schengen";
 
 const MAX_BODY_BYTES = 1_000_000;
 
 export async function GET(request: Request) {
-  const user = getAccessUser(request);
+  const user = await getSessionUser(request);
   if (!user) return unauthorized();
 
   const [row] = await getDb()
@@ -23,7 +23,10 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const user = getAccessUser(request);
+  if (!isSameOrigin(request)) {
+    return Response.json({ error: "Cross-site request blocked" }, { status: 403 });
+  }
+  const user = await getSessionUser(request);
   if (!user) return unauthorized();
 
   const contentLength = Number(request.headers.get("content-length") || 0);
