@@ -14,6 +14,7 @@ export const countryName=(code:string)=>countries.find(c=>c[0]===code)?.[1]||cod
 export const tripLabel=(t:Trip)=>t.countries.map(countryName).join(', ')||'Schengen trip';
 export function used(date:string,trips:Trip[]){const end=day(date),ranges=trips.map(t=>[Math.max(day(t.entryDate),end-179),Math.min(t.exitDate?day(t.exitDate):end,end)]).filter(([a,b])=>a<=b).sort((a,b)=>a[0]-b[0]);let count=0,last=-Infinity;for(const [a,b] of ranges){count+=Math.max(0,b-Math.max(a,last+1)+1);last=Math.max(last,b)}return count}
 export const available=(date:string,trips:Trip[])=>Math.max(0,90-used(date,trips));
+export function tripDuration(entryDate:string,exitDate:string|null,now:string){const start=day(entryDate),rawEnd=day(exitDate||now);if(!Number.isFinite(start)||!Number.isFinite(rawEnd))return 0;const end=Math.max(start,rawEnd);return end-start+1}
 export function orderedRange(first:string,second:string):[string,string]{return first<=second?[first,second]:[second,first]}
 export function tripCoversCalendarDay(trip:Trip,date:string,now:string){return trip.entryDate<=date&&(trip.exitDate?trip.exitDate>=date:date<=now)}
 export function tripsInWindow(date:string,trips:Trip[]){const start=iso(day(date)-179);return trips.filter(t=>(t.exitDate||date)>=start&&t.entryDate<=date).sort((a,b)=>a.entryDate.localeCompare(b.entryDate))}
