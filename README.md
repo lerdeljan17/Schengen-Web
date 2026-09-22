@@ -1,7 +1,7 @@
 # Schengen Tracker — web
 
 Responsive web companion to https://github.com/lerdeljan17/Schengen, preserving its four screens, rounded cards, original colors and eight themes.
-
+https://app.schengen-tracker.workers.dev/
 ## Run
 
 Node 22.13+; `npm ci`, then `npm run dev`. Production: `npm run build`. The application is a React/Vinext app deployed as a Cloudflare Worker with static assets and a D1 binding.
